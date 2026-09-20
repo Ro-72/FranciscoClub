@@ -11,7 +11,9 @@ let camera
 let courtGroup
 let ball
 let resizeObserver
+let intersectionObserver
 let reducedMotion = false
+let isVisible = true
 let kickPulse = 0
 const players = []
 const pointer = { x: 0, y: 0 }
@@ -162,8 +164,19 @@ function handleCourtTap() {
   kickPulse = 1
 }
 
+function handleVisibility(entries) {
+  isVisible = entries[0]?.isIntersecting ?? true
+  if (!isVisible && animationFrame) {
+    cancelAnimationFrame(animationFrame)
+    animationFrame = 0
+  }
+  if (isVisible && !reducedMotion && !animationFrame) {
+    animationFrame = requestAnimationFrame(render)
+  }
+}
+
 function render(time = 0) {
-  if (!renderer) return
+  if (!renderer || !isVisible) return
   courtGroup.rotation.x += (targetRotation.x - courtGroup.rotation.x) * 0.06
   courtGroup.rotation.y += (targetRotation.y - courtGroup.rotation.y) * 0.06
   if (!reducedMotion) {
@@ -212,6 +225,8 @@ onMounted(() => {
   wrapper.value.addEventListener('click', handleCourtTap)
   resizeObserver = new ResizeObserver(resize)
   resizeObserver.observe(canvas.value.parentElement)
+  intersectionObserver = new IntersectionObserver(handleVisibility, { threshold: 0.15 })
+  intersectionObserver.observe(wrapper.value)
   resize()
   render()
 })
@@ -222,6 +237,7 @@ onBeforeUnmount(() => {
   wrapper.value?.removeEventListener('pointerleave', handlePointerLeave)
   wrapper.value?.removeEventListener('click', handleCourtTap)
   resizeObserver?.disconnect()
+  intersectionObserver?.disconnect()
   renderer?.dispose()
 })
 </script>

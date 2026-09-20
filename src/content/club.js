@@ -12,41 +12,56 @@ export const club = {
   activities: ['Actividades deportivas', 'Restaurantes, bares y cantinas'],
 }
 
-export const disciplines = [
+export const moments = [
   {
     number: '01',
-    title: 'Cancha & juego',
-    text: 'Un punto de encuentro para moverte, competir y disfrutar el deporte con tu gente.',
-    tag: 'Movimiento',
+    moment: 'Antes',
+    title: 'La llegada cambia el día.',
+    text: 'Cruzas la puerta, reconoces a tu gente y la rutina queda afuera.',
+    image: '/assets/pilar-pertenece.jpg',
+    alt: 'Jugador llegando de noche a un club y siendo recibido por sus amigos',
   },
   {
     number: '02',
-    title: 'Mesa & barra',
-    text: 'Después del partido, la conversación continúa con una propuesta para compartir sin apuros.',
-    tag: 'Encuentro',
+    moment: 'Durante',
+    title: 'Todo ocurre en la próxima jugada.',
+    text: 'El ruido baja, el cuerpo responde y el partido encuentra su propio ritmo.',
+    image: '/assets/pilar-juega-v2.jpg',
+    alt: 'Jugador amateur controlando un balón en una cancha sintética al atardecer',
   },
   {
     number: '03',
-    title: 'Comunidad',
-    text: 'Un club cercano, activo y abierto a los momentos que se vuelven tradición.',
-    tag: 'Pertenencia',
+    moment: 'Después',
+    title: 'El partido termina. La historia no.',
+    text: 'La conversación, la comida y las risas convierten una fecha en un recuerdo.',
+    image: '/assets/pilar-comparte-v3.jpg',
+    alt: 'Amigos compartiendo una mesa después de jugar fútbol',
   },
 ]
 
-export const story = [
+export const offerings = [
   {
-    kicker: '01 · El inicio',
-    title: 'Entra al juego.',
-    text: 'Una energía dorada te recibe. Aquí cada visita empieza con una decisión simple: moverte.',
+    number: '01',
+    tag: 'Movimiento',
+    title: 'Cancha y actividades deportivas',
+    text: 'Un espacio para moverte, competir y disfrutar el deporte con tu grupo.',
+    image: '/assets/oferta-movimiento-v1.jpg',
+    alt: 'Trabajador preparando una cancha sintética antes del siguiente partido',
   },
   {
-    kicker: '02 · El ritmo',
-    title: 'Quédate por la experiencia.',
-    text: 'De la cancha a la mesa, Francisco’s Club conecta el deporte con la pausa que se disfruta.',
+    number: '02',
+    tag: 'Pausa',
+    title: 'Mesa, comida y barra',
+    text: 'El punto de encuentro después del partido, pensado para conversar sin apuros.',
+    image: '/assets/oferta-pausa-v3.jpg',
+    alt: 'Trabajador llevando comida a una mesa del restaurante del club',
   },
   {
-    kicker: '03 · El encuentro',
-    title: 'Hazlo tu lugar.',
-    text: 'Un club deportivo y social para Paucarpata. Ven a jugar, compartir y volver.',
+    number: '03',
+    tag: 'Encuentro',
+    title: 'Ambiente de club',
+    text: 'Un lugar cercano en Paucarpata para volver, reconocer caras y crear costumbre.',
+    image: '/assets/oferta-encuentro-v2.jpg',
+    alt: 'Personal del club coordinando la llegada de jugadores durante la noche',
   },
 ]
