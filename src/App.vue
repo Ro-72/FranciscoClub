@@ -1,19 +1,32 @@
 <script setup>
-import { computed, defineAsyncComponent, onBeforeUnmount, onMounted, ref } from 'vue'
+import { defineAsyncComponent, onBeforeUnmount, onMounted, ref } from 'vue'
 import { club, moments, offerings } from './content/club'
 import FloatingSocialBar from './components/FloatingSocialBar.vue'
 import SocialCommunity from './components/SocialCommunity.vue'
 
 const ThreeCourt = defineAsyncComponent(() => import('./components/ThreeCourt.vue'))
 
-const scrollY = ref(0)
-const sceneProgress = computed(() => Math.min(Math.max(scrollY.value / 820, 0), 1))
-const shieldStyle = computed(() => ({
-  transform: `translate3d(0, ${sceneProgress.value * -42}px, 0) rotate(${sceneProgress.value * 7 - 3.5}deg)`,
-}))
+const hero = ref(null)
+const shield = ref(null)
+let scrollAnimationFrame = 0
+let previousProgress = -1
+let heroIsVisible = true
+let heroObserver
 
-function updateScroll() {
-  scrollY.value = window.scrollY
+function updateShield() {
+  if (!heroIsVisible || scrollAnimationFrame) return
+  if (window.scrollY >= 820 && previousProgress === 1) return
+
+  scrollAnimationFrame = requestAnimationFrame(() => {
+    const progress = Math.min(Math.max(window.scrollY / 820, 0), 1)
+
+    if (progress !== previousProgress && shield.value) {
+      shield.value.style.transform = `translate3d(0, ${progress * -42}px, 0) rotate(${progress * 7 - 3.5}deg)`
+      previousProgress = progress
+    }
+
+    scrollAnimationFrame = 0
+  })
 }
 
 function scrollToSection(id) {
@@ -21,16 +34,27 @@ function scrollToSection(id) {
 }
 
 onMounted(() => {
-  updateScroll()
-  window.addEventListener('scroll', updateScroll, { passive: true })
+  heroObserver = new IntersectionObserver(
+    ([entry]) => {
+      heroIsVisible = entry?.isIntersecting ?? true
+      if (heroIsVisible) updateShield()
+    },
+    { rootMargin: '120px 0px' },
+  )
+  if (hero.value) heroObserver.observe(hero.value)
+  updateShield()
+  window.addEventListener('scroll', updateShield, { passive: true })
 })
 
-onBeforeUnmount(() => window.removeEventListener('scroll', updateScroll))
+onBeforeUnmount(() => {
+  window.removeEventListener('scroll', updateShield)
+  cancelAnimationFrame(scrollAnimationFrame)
+  heroObserver?.disconnect()
+})
 </script>
 
 <template>
   <div class="site-shell">
-    <div class="grain" aria-hidden="true"></div>
     <FloatingSocialBar />
 
     <header class="site-header">
@@ -45,7 +69,8 @@ onBeforeUnmount(() => window.removeEventListener('scroll', updateScroll))
     </header>
 
     <main>
-      <section id="inicio" class="hero" aria-labelledby="hero-title">
+      <section id="inicio" ref="hero" class="hero" aria-labelledby="hero-title">
+        <div class="grain" aria-hidden="true"></div>
         <div class="hero-ambient ambient-left" aria-hidden="true"></div><div class="hero-ambient ambient-right" aria-hidden="true"></div>
         <div class="hero-content">
           <p class="eyebrow"><span class="live-dot"></span> Paucarpata · Arequipa · Perú</p>
@@ -54,7 +79,7 @@ onBeforeUnmount(() => window.removeEventListener('scroll', updateScroll))
           <div class="hero-actions"><button class="button button-primary" type="button" @click="scrollToSection('#cancha')">Descubre la cancha <span aria-hidden="true">↓</span></button><a class="text-link" href="#comunidad">Conoce el club <span aria-hidden="true">↗</span></a></div>
         </div>
         <div class="hero-emblem" aria-hidden="true">
-          <div class="orbit orbit-one"></div><div class="orbit orbit-two"></div><img :style="shieldStyle" src="/escudo-franciscos-club.png" alt="" /><span class="emblem-caption">F · C <span></span> 2019</span>
+          <div class="orbit orbit-one"></div><div class="orbit orbit-two"></div><img ref="shield" src="/escudo-franciscos-club.png" alt="" /><span class="emblem-caption">F · C <span></span> 2019</span>
         </div>
         <div class="hero-bottom"><span>Scroll para explorar</span><span class="scroll-line"></span><span>01—06</span></div>
       </section>
@@ -139,12 +164,12 @@ onBeforeUnmount(() => window.removeEventListener('scroll', updateScroll))
 @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;1,600;1,700&display=swap');
 :root { --ink:#101112; --cream:#f3efe5; --paper:#faf8f2; --gold:#c99a3b; --gold-light:#e7c06a; --muted:#827d70; --line:rgba(16,17,18,.14); --green:#1b3129; }
 * { box-sizing:border-box; } html { scroll-behavior:smooth; } body { -webkit-font-smoothing:antialiased; margin:0; min-width:320px; background:var(--cream); color:var(--ink); font-family:'Manrope',sans-serif; line-height:1.5; text-rendering:optimizeLegibility; } button,a { font:inherit; } button { cursor:pointer; } a { color:inherit; text-decoration:none; } h1,h2,h3,p { margin-top:0; } main section,footer { scroll-margin-top:24px; } ::selection { background:var(--gold-light); color:var(--ink); }
-.site-shell { overflow-x:clip; position:relative; } .grain { background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.55'/%3E%3C/svg%3E"); inset:0; opacity:.05; pointer-events:none; position:fixed; z-index:10; }
+.site-shell { overflow-x:clip; position:relative; } .grain { background-image:url('/assets/grain-static.png'); background-repeat:repeat; background-size:96px 96px; inset:0; opacity:.035; pointer-events:none; position:absolute; z-index:0; }
 .site-header { align-items:center; display:flex; height:88px; justify-content:space-between; left:0; padding:0 5vw; position:absolute; right:0; top:0; z-index:4; } .brand { align-items:center; display:inline-flex; gap:11px; } .brand-mark { align-items:center; display:flex; height:44px; justify-content:center; width:38px; } .brand-mark img { filter:drop-shadow(0 4px 5px rgba(0,0,0,.15)); height:100%; object-fit:contain; width:100%; } .brand-copy { display:flex; flex-direction:column; line-height:.92; } .brand-copy strong { font-size:14px; font-weight:800; letter-spacing:-.04em; } .brand-copy small { font-family:'DM Mono',monospace; font-size:9px; letter-spacing:.38em; margin-left:2px; margin-top:4px; }
 .main-nav { display:flex; gap:30px; margin-left:8vw; } .main-nav a { color:rgba(16,17,18,.64); font-size:11px; font-weight:700; padding-bottom:5px; position:relative; transition:color .2s; } .main-nav a::after { background:var(--gold); bottom:0; content:''; height:1px; left:0; position:absolute; transform:scaleX(0); transform-origin:left; transition:transform .25s ease; width:100%; } .main-nav a:hover,.text-link:hover { color:var(--gold); } .main-nav a:hover::after,.main-nav a:focus-visible::after { transform:scaleX(1); } .header-action { background:transparent; border:1px solid var(--ink); border-radius:100px; color:var(--ink); font-size:10px; font-weight:800; padding:12px 17px; transition:background .2s,color .2s,transform .2s; } .header-action span { font-size:14px; margin-left:7px; } .header-action:hover { background:var(--ink); color:var(--cream); transform:translateY(-2px); }
 .hero { background:var(--cream); display:flex; min-height:850px; overflow:hidden; padding:170px 5vw 70px; position:relative; } .hero-content { max-width:610px; position:relative; z-index:2; } .eyebrow { align-items:center; color:var(--muted); display:flex; font-family:'DM Mono',monospace; font-size:10px; gap:9px; letter-spacing:.12em; margin:0 0 28px; text-transform:uppercase; } .eyebrow.light { color:rgba(243,239,229,.5); } .live-dot { background:var(--gold); border-radius:50%; box-shadow:0 0 0 5px rgba(201,154,59,.12); height:6px; width:6px; } h1,h2 { font-size:clamp(58px,7.6vw,112px); letter-spacing:-.075em; line-height:.89; margin-bottom:35px; } h1 em,h2 em { color:var(--gold); font-family:'Playfair Display',Georgia,serif; font-weight:600; letter-spacing:-.08em; } .hero-intro { color:rgba(16,17,18,.65); font-size:14px; line-height:1.75; max-width:335px; } .hero-actions { align-items:center; display:flex; gap:27px; margin-top:35px; }
 .button { align-items:center; border:0; border-radius:100px; display:inline-flex; font-size:11px; font-weight:800; gap:24px; justify-content:center; padding:15px 19px; transition:transform .2s,background .2s; } .button:hover { transform:translateY(-2px); } .button span { font-size:18px; font-weight:400; line-height:.5; } .button-primary { background:var(--ink); color:var(--cream); } .button-primary:hover { background:var(--gold); } .button-gold { background:var(--gold-light); color:var(--ink); } .button-gold:hover { background:var(--cream); } .button-light { background:var(--cream); color:var(--ink); } .button-light:hover { background:var(--gold-light); } .text-link { border-bottom:1px solid rgba(16,17,18,.28); color:rgba(16,17,18,.7); font-size:11px; font-weight:700; padding-bottom:4px; transition:color .2s; }
-.hero-emblem { align-items:center; display:flex; height:660px; justify-content:center; position:absolute; right:1.5vw; top:95px; width:min(52vw,720px); } .hero-emblem img { filter:drop-shadow(0 28px 26px rgba(70,45,9,.3)); max-height:520px; max-width:75%; object-fit:contain; position:relative; transition:transform .1s linear; z-index:1; } .orbit { border:1px solid rgba(16,17,18,.13); border-radius:50%; height:600px; position:absolute; transform:rotate(-25deg) scaleX(.65); width:600px; } .orbit-one { border-left-color:transparent; border-top-color:var(--gold); } .orbit-two { height:510px; transform:rotate(48deg) scaleX(.8); width:510px; } .emblem-caption { bottom:42px; color:var(--muted); font-family:'DM Mono',monospace; font-size:9px; letter-spacing:.2em; position:absolute; right:14%; transform:rotate(-90deg); } .emblem-caption span { background:var(--gold); border-radius:50%; display:inline-block; height:4px; margin:0 8px; width:4px; } .hero-ambient { border-radius:50%; opacity:.7; position:absolute; } .ambient-left { background:rgba(211,169,79,.13); height:300px; left:-150px; top:430px; width:300px; } .ambient-right { background:rgba(226,190,107,.21); height:260px; right:21%; top:240px; width:260px; } .hero-bottom { align-items:center; bottom:40px; color:var(--muted); display:flex; font-family:'DM Mono',monospace; font-size:9px; gap:14px; left:5vw; letter-spacing:.12em; position:absolute; text-transform:uppercase; } .scroll-line { background:var(--gold); height:1px; width:55px; }
+.hero-emblem { align-items:center; display:flex; height:660px; justify-content:center; position:absolute; right:1.5vw; top:95px; width:min(52vw,720px); } .hero-emblem img { filter:none; max-height:520px; max-width:75%; object-fit:contain; position:relative; transition:none; will-change:transform; z-index:1; } .orbit { border:1px solid rgba(16,17,18,.13); border-radius:50%; height:600px; position:absolute; transform:rotate(-25deg) scaleX(.65); width:600px; } .orbit-one { border-left-color:transparent; border-top-color:var(--gold); } .orbit-two { height:510px; transform:rotate(48deg) scaleX(.8); width:510px; } .emblem-caption { bottom:42px; color:var(--muted); font-family:'DM Mono',monospace; font-size:9px; letter-spacing:.2em; position:absolute; right:14%; transform:rotate(-90deg); } .emblem-caption span { background:var(--gold); border-radius:50%; display:inline-block; height:4px; margin:0 8px; width:4px; } .hero-ambient { border-radius:50%; opacity:.7; position:absolute; } .ambient-left { background:rgba(211,169,79,.13); height:300px; left:-150px; top:430px; width:300px; } .ambient-right { background:rgba(226,190,107,.21); height:260px; right:21%; top:240px; width:260px; } .hero-bottom { align-items:center; bottom:40px; color:var(--muted); display:flex; font-family:'DM Mono',monospace; font-size:9px; gap:14px; left:5vw; letter-spacing:.12em; position:absolute; text-transform:uppercase; } .scroll-line { background:var(--gold); height:1px; width:55px; }
 .section-padding { padding:145px 10vw; }
 .court-section { background:var(--ink); color:var(--cream); display:grid; gap:7vw; grid-template-columns:.74fr 1.26fr; min-height:820px; overflow:hidden; position:relative; } .court-section::before { background:radial-gradient(circle,rgba(201,154,59,.22),transparent 65%); content:''; height:600px; position:absolute; right:4vw; top:60px; width:600px; } .court-copy { align-self:center; position:relative; z-index:2; } .court-copy h2 { font-size:clamp(58px,6.4vw,92px); } .court-copy h2 em { color:var(--gold-light); } .court-intro { color:rgba(243,239,229,.6); font-size:14px; line-height:1.8; max-width:340px; }
 .price-lockup { border-bottom:1px solid rgba(243,239,229,.2); border-top:1px solid rgba(243,239,229,.2); display:grid; grid-template-columns:1fr auto; margin:39px 0 28px; max-width:380px; padding:18px 0; } .price-lockup > span,.price-lockup em { color:rgba(243,239,229,.48); font-family:'DM Mono',monospace; font-size:9px; font-style:normal; letter-spacing:.1em; text-transform:uppercase; } .price-lockup strong { color:var(--gold-light); font-size:58px; grid-row:span 2; letter-spacing:-.08em; line-height:.85; } .price-lockup strong small { font-size:18px; letter-spacing:0; } .price-lockup em { align-self:end; font-size:8px; }
@@ -166,6 +191,7 @@ onBeforeUnmount(() => window.removeEventListener('scroll', updateScroll))
   .offer-heading { gap:3vw; grid-template-columns:.75fr 1.5fr .85fr; }
 }
 @media (max-width:800px) {
+  .grain { display:none; }
   .site-header { height:75px; padding:0 6vw; } .main-nav { display:none; } .header-action { font-size:9px; padding:10px 12px; }
   .hero { min-height:820px; padding:135px 8vw 80px; } .hero-content { max-width:100%; } .hero h1 { font-size:clamp(51px,15vw,68px); } .hero-intro { max-width:300px; } .hero-emblem { bottom:-48px; height:390px; opacity:.82; right:-115px; top:auto; width:470px; } .hero-emblem img { max-height:300px; } .orbit { height:400px; width:400px; } .orbit-two { height:340px; width:340px; } .hero-bottom { bottom:22px; left:8vw; }
   .section-padding { padding:95px 8vw; }
