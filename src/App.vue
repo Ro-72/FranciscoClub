@@ -1,6 +1,7 @@
 <script setup>
 import { defineAsyncComponent, onBeforeUnmount, onMounted, ref } from 'vue'
 import { club, moments, offerings } from './content/club'
+import ChatbotWidget from './components/ChatbotWidget.vue'
 import FloatingSocialBar from './components/FloatingSocialBar.vue'
 import SocialCommunity from './components/SocialCommunity.vue'
 
@@ -56,6 +57,7 @@ onBeforeUnmount(() => {
 <template>
   <div class="site-shell">
     <FloatingSocialBar />
+    <ChatbotWidget />
 
     <header class="site-header">
       <a class="brand" href="#inicio" aria-label="Francisco’s Club, volver al inicio">
