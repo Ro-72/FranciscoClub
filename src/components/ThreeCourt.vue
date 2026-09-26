@@ -135,7 +135,7 @@ function buildCourt() {
   const light = new THREE.PointLight(0xe7c06a, 1.8, 5)
   light.position.set(0, 4, 1.5)
   courtGroup.add(light)
-  const texture = new THREE.TextureLoader().load('/escudo-franciscos-club.png')
+  const texture = new THREE.TextureLoader().load(`${import.meta.env.BASE_URL}escudo-franciscos-club.png`)
   const sign = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({ map: texture, transparent: true }))
   sign.position.set(0, 1.5, -2.16)
   courtGroup.add(sign)

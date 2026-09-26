@@ -6,6 +6,8 @@ import FloatingSocialBar from './components/FloatingSocialBar.vue'
 import SocialCommunity from './components/SocialCommunity.vue'
 
 const ThreeCourt = defineAsyncComponent(() => import('./components/ThreeCourt.vue'))
+const assetUrl = (path) => `${import.meta.env.BASE_URL}${path.replace(/^\/+/, '')}`
+const grainStyle = { backgroundImage: `url(${assetUrl('assets/grain-static.png')})` }
 
 const hero = ref(null)
 const shield = ref(null)
@@ -61,7 +63,7 @@ onBeforeUnmount(() => {
 
     <header class="site-header">
       <a class="brand" href="#inicio" aria-label="Francisco’s Club, volver al inicio">
-        <span class="brand-mark"><img src="/escudo-franciscos-club.png" alt="" /></span>
+        <span class="brand-mark"><img :src="assetUrl('escudo-franciscos-club.png')" alt="" /></span>
         <span class="brand-copy"><strong>FRANCISCO’S</strong><small>CLUB</small></span>
       </a>
       <nav class="main-nav" aria-label="Navegación principal">
@@ -72,7 +74,7 @@ onBeforeUnmount(() => {
 
     <main>
       <section id="inicio" ref="hero" class="hero" aria-labelledby="hero-title">
-        <div class="grain" aria-hidden="true"></div>
+        <div class="grain" :style="grainStyle" aria-hidden="true"></div>
         <div class="hero-ambient ambient-left" aria-hidden="true"></div><div class="hero-ambient ambient-right" aria-hidden="true"></div>
         <div class="hero-content">
           <p class="eyebrow"><span class="live-dot"></span> Paucarpata · Arequipa · Perú</p>
@@ -81,7 +83,7 @@ onBeforeUnmount(() => {
           <div class="hero-actions"><button class="button button-primary" type="button" @click="scrollToSection('#cancha')">Descubre la cancha <span aria-hidden="true">↓</span></button><a class="text-link" href="#comunidad">Conoce el club <span aria-hidden="true">↗</span></a></div>
         </div>
         <div class="hero-emblem" aria-hidden="true">
-          <div class="orbit orbit-one"></div><div class="orbit orbit-two"></div><img ref="shield" src="/escudo-franciscos-club.png" alt="" /><span class="emblem-caption">F · C <span></span> 2019</span>
+          <div class="orbit orbit-one"></div><div class="orbit orbit-two"></div><img ref="shield" :src="assetUrl('escudo-franciscos-club.png')" alt="" /><span class="emblem-caption">F · C <span></span> 2019</span>
         </div>
         <div class="hero-bottom"><span>Scroll para explorar</span><span class="scroll-line"></span><span>01—06</span></div>
       </section>
@@ -111,7 +113,7 @@ onBeforeUnmount(() => {
         </div>
         <div class="moments-grid">
           <article v-for="(moment, index) in moments" :key="moment.moment" class="moment-card" :class="`moment-card--${index + 1}`">
-            <div class="moment-image"><img :src="moment.image" :alt="moment.alt" loading="lazy" /><span>{{ moment.number }} · {{ moment.moment }}</span></div>
+            <div class="moment-image"><img :src="assetUrl(moment.image)" :alt="moment.alt" loading="lazy" /><span>{{ moment.number }} · {{ moment.moment }}</span></div>
             <div class="moment-copy"><h3>{{ moment.title }}</h3><p>{{ moment.text }}</p></div>
           </article>
         </div>
@@ -119,9 +121,9 @@ onBeforeUnmount(() => {
 
       <section id="quedarse" class="stay-section" aria-labelledby="stay-title">
         <div class="stay-visual">
-          <img class="stay-main-image" src="/assets/quedarse-mesa-v4.jpg" alt="Cinco amigos compartiendo comida después de un partido junto a una cancha iluminada" loading="lazy" />
+          <img class="stay-main-image" :src="assetUrl('assets/quedarse-mesa-v4.jpg')" alt="Cinco amigos compartiendo comida después de un partido junto a una cancha iluminada" loading="lazy" />
           <div class="stay-overlay" aria-hidden="true"></div>
-          <figure class="stay-inset"><img src="/assets/quedarse-regreso-v4.jpg" alt="Cuatro amigos caminando de la cancha hacia la zona social del club" loading="lazy" /><figcaption>La noche apenas empieza</figcaption></figure>
+          <figure class="stay-inset"><img :src="assetUrl('assets/quedarse-regreso-v4.jpg')" alt="Cuatro amigos caminando de la cancha hacia la zona social del club" loading="lazy" /><figcaption>La noche apenas empieza</figcaption></figure>
         </div>
         <div class="stay-copy section-padding">
           <p class="eyebrow">El lado social del club</p>
@@ -140,7 +142,7 @@ onBeforeUnmount(() => {
         <div class="offer-grid">
           <article v-for="item in offerings" :key="item.number" class="offer-card">
             <div class="offer-top"><span>{{ item.number }}</span><span>{{ item.tag }}</span></div>
-            <div class="offer-image"><img :src="item.image" :alt="item.alt" loading="lazy" /></div>
+            <div class="offer-image"><img :src="assetUrl(item.image)" :alt="item.alt" loading="lazy" /></div>
             <h3>{{ item.title }}</h3><p>{{ item.text }}</p>
           </article>
         </div>
@@ -152,7 +154,7 @@ onBeforeUnmount(() => {
 
     <footer id="visitanos" class="site-footer">
       <div class="footer-main">
-        <div class="footer-identity"><a class="brand footer-brand" href="#inicio"><span class="brand-mark"><img src="/escudo-franciscos-club.png" alt="" /></span><span class="brand-copy"><strong>FRANCISCO’S</strong><small>CLUB</small></span></a><p>{{ club.claim }}</p></div>
+        <div class="footer-identity"><a class="brand footer-brand" href="#inicio"><span class="brand-mark"><img :src="assetUrl('escudo-franciscos-club.png')" alt="" /></span><span class="brand-copy"><strong>FRANCISCO’S</strong><small>CLUB</small></span></a><p>{{ club.claim }}</p></div>
         <div class="footer-column"><span>Ubicación</span><p>{{ club.address }}<br />{{ club.addressDetail }}</p></div>
         <div class="footer-column"><span>Información legal</span><p>{{ club.legalName }}<br />RUC {{ club.ruc }} · {{ club.status }}<br />Inicio: {{ club.founded }}</p></div>
         <nav class="footer-column footer-nav" aria-label="Navegación del footer"><span>Explora</span><a href="#cancha">La cancha</a><a href="#momentos">La experiencia</a><a href="#oferta">Lo que encuentras</a><a href="#comunidad">Comunidad</a></nav>
@@ -166,7 +168,7 @@ onBeforeUnmount(() => {
 @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;1,600;1,700&display=swap');
 :root { --ink:#101112; --cream:#f3efe5; --paper:#faf8f2; --gold:#c99a3b; --gold-light:#e7c06a; --muted:#827d70; --line:rgba(16,17,18,.14); --green:#1b3129; }
 * { box-sizing:border-box; } html { scroll-behavior:smooth; } body { -webkit-font-smoothing:antialiased; margin:0; min-width:320px; background:var(--cream); color:var(--ink); font-family:'Manrope',sans-serif; line-height:1.5; text-rendering:optimizeLegibility; } button,a { font:inherit; } button { cursor:pointer; } a { color:inherit; text-decoration:none; } h1,h2,h3,p { margin-top:0; } main section,footer { scroll-margin-top:24px; } ::selection { background:var(--gold-light); color:var(--ink); }
-.site-shell { overflow-x:clip; position:relative; } .grain { background-image:url('/assets/grain-static.png'); background-repeat:repeat; background-size:96px 96px; inset:0; opacity:.035; pointer-events:none; position:absolute; z-index:0; }
+.site-shell { overflow-x:clip; position:relative; } .grain { background-repeat:repeat; background-size:96px 96px; inset:0; opacity:.035; pointer-events:none; position:absolute; z-index:0; }
 .site-header { align-items:center; display:flex; height:88px; justify-content:space-between; left:0; padding:0 5vw; position:absolute; right:0; top:0; z-index:4; } .brand { align-items:center; display:inline-flex; gap:11px; } .brand-mark { align-items:center; display:flex; height:44px; justify-content:center; width:38px; } .brand-mark img { filter:drop-shadow(0 4px 5px rgba(0,0,0,.15)); height:100%; object-fit:contain; width:100%; } .brand-copy { display:flex; flex-direction:column; line-height:.92; } .brand-copy strong { font-size:14px; font-weight:800; letter-spacing:-.04em; } .brand-copy small { font-family:'DM Mono',monospace; font-size:9px; letter-spacing:.38em; margin-left:2px; margin-top:4px; }
 .main-nav { display:flex; gap:30px; margin-left:8vw; } .main-nav a { color:rgba(16,17,18,.64); font-size:11px; font-weight:700; padding-bottom:5px; position:relative; transition:color .2s; } .main-nav a::after { background:var(--gold); bottom:0; content:''; height:1px; left:0; position:absolute; transform:scaleX(0); transform-origin:left; transition:transform .25s ease; width:100%; } .main-nav a:hover,.text-link:hover { color:var(--gold); } .main-nav a:hover::after,.main-nav a:focus-visible::after { transform:scaleX(1); } .header-action { background:transparent; border:1px solid var(--ink); border-radius:100px; color:var(--ink); font-size:10px; font-weight:800; padding:12px 17px; transition:background .2s,color .2s,transform .2s; } .header-action span { font-size:14px; margin-left:7px; } .header-action:hover { background:var(--ink); color:var(--cream); transform:translateY(-2px); }
 .hero { background:var(--cream); display:flex; min-height:850px; overflow:hidden; padding:170px 5vw 70px; position:relative; } .hero-content { max-width:610px; position:relative; z-index:2; } .eyebrow { align-items:center; color:var(--muted); display:flex; font-family:'DM Mono',monospace; font-size:10px; gap:9px; letter-spacing:.12em; margin:0 0 28px; text-transform:uppercase; } .eyebrow.light { color:rgba(243,239,229,.5); } .live-dot { background:var(--gold); border-radius:50%; box-shadow:0 0 0 5px rgba(201,154,59,.12); height:6px; width:6px; } h1,h2 { font-size:clamp(58px,7.6vw,112px); letter-spacing:-.075em; line-height:.89; margin-bottom:35px; } h1 em,h2 em { color:var(--gold); font-family:'Playfair Display',Georgia,serif; font-weight:600; letter-spacing:-.08em; } .hero-intro { color:rgba(16,17,18,.65); font-size:14px; line-height:1.75; max-width:335px; } .hero-actions { align-items:center; display:flex; gap:27px; margin-top:35px; }
